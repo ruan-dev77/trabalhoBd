@@ -11,6 +11,7 @@ services:
       - ./wal_archive:/wal_archive
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
       - ./sql:/sql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
       - "5432:5432"
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
@@ -32,6 +33,17 @@ services:
         condition: service_healthy
     volumes:
       - ./api:/app
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: bookinghub_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@bookinghub.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
 
 volumes:
   pgdata:

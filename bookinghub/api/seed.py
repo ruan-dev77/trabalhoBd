@@ -47,9 +47,20 @@ def random_date_range(start_days=-180, end_days=180):
     delta = (end_days - start_days)
     return start + timedelta(days=random.randint(0, delta))
 
+def already_seeded(conn):
+    with conn.cursor() as cur:
+        cur.execute("SELECT COUNT(*) FROM customers")
+        return cur.fetchone()[0] > 0
+
+
 def main():
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
+
+    if already_seeded(conn):
+        print("⏭️  Banco já populado, pulando seed.")
+        conn.close()
+        return
 
     print("🌱 Iniciando seed...")
 
